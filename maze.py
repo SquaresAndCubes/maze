@@ -7,7 +7,7 @@
 
 #import double ended queue function
 from collections import deque
-import pprint
+import argparse
 
 
 #maze from fig 2.37 in class text book converted to 0's and 1's
@@ -58,9 +58,12 @@ def mazetree(maze):
 
 #function for performing the dfs search on the tree that was created
 
-def dfs_search(maze):
+def dfs_search(maze, top):
     #define the entrace and exit of the maze by 2d array coord
-    exit, enter = (0, 7), (16, 9)
+    enter, exit = (16, 9), (0, 7)
+
+    if top == True:
+        enter, exit = (0, 7), (16,9)
     #create double ended queue for storing nodes to be explored
     dbl_end_queue = deque([("", enter)])
     #unordered collection for positions already seen or visited
@@ -83,18 +86,50 @@ def dfs_search(maze):
         for dir, adj in tree[curr_loc]:
             dbl_end_queue.append((path + dir, adj))
 
-    return "There is no Path!"
+    print('There is no Path!')
 
-#Run main program and print output
-def main():
+#pretty display of maze
+def print_maze():
+    print('FIGURE 2.37 MAZE\n')
     chars = [' ', '*']
     for row in maze_a:
         for item in row:
             print(chars[item], end=' ')
         print()
     print('\n')
-    print('Path:')
 
-    dfs_search(maze_a)
 
-main()
+#Main loop with options from command line displays maze pretty and runs dfs
+def main(option):
+    if option == 'tree':
+        print(mazetree(maze_a))
+    elif option == 'top':
+        print_maze()
+        print('Solved from top entrance:\n')
+        dfs_search(maze_a, top=True)
+    else:
+        print_maze()
+        print('Solved from bottom entrance:\n')
+        dfs_search(maze_a, top=False)
+
+
+####################COMMAND LINE ARGUMENTS############################
+#argparse
+parser = argparse.ArgumentParser(description='Display more information.')
+parser.add_argument('--tree', action='store_true', help='Displays maze tree')
+parser.add_argument('--top', action='store_true', help='Solve maze from top')
+args = parser.parse_args()
+
+#command line switch flow
+if args.tree:
+    main('tree')
+elif args.top:
+    main('top')
+else:
+    main(option=None)
+
+#######################################################################
+
+
+
+
