@@ -5,6 +5,10 @@
 #Dependencies:
 #Python 3.6 w/ standard library
 
+#******************************************#
+#RUN WITH -h to see more options***********#
+#******************************************#
+
 #import double ended queue function
 from collections import deque
 import argparse
@@ -58,7 +62,7 @@ def mazetree(maze):
 
 #function for performing the dfs search on the tree that was created
 
-def dfs_search(maze, top):
+def dfs_search(maze, top, steps):
     #define the entrace and exit of the maze by 2d array coord
     enter, exit = (16, 9), (0, 7)
 
@@ -85,6 +89,8 @@ def dfs_search(maze, top):
         #appends the queue with the path traveled already and adds last direction move made, and queues the next location
         for dir, adj in tree[curr_loc]:
             dbl_end_queue.append((path + dir, adj))
+        if steps == True:
+            print(path)
 
     print('There is no Path!')
 
@@ -98,38 +104,34 @@ def print_maze():
         print()
     print('\n')
 
+####################COMMAND LINE ARGUMENTS w/ Argparse############################
 
-#Main loop with options from command line displays maze pretty and runs dfs
-def main(option):
-    if option == 'tree':
+parser = argparse.ArgumentParser(description='Display more information.')
+parser.add_argument('--tree', action='store_true', help='Displays maze tree.')
+parser.add_argument('--top', action='store_true', help='Solve maze from top.')
+parser.add_argument('--steps', action='store_true', help='Show steps taken.')
+args = parser.parse_args()
+
+#Main loop with options from command
+def main():
+    #Tree Switch
+    if args.tree:
         print(mazetree(maze_a))
-    elif option == 'top':
+    #Solve from top of maze
+    elif args.top:
         print_maze()
         print('Solved from top entrance:\n')
-        dfs_search(maze_a, top=True)
+        dfs_search(maze_a, top=True, steps=False)
+    elif args.steps:
+        print_maze()
+        print('Solved from bottom entrance:\n')
+        dfs_search(maze_a, top=False, steps=True)
+    #Default
     else:
         print_maze()
         print('Solved from bottom entrance:\n')
-        dfs_search(maze_a, top=False)
+        dfs_search(maze_a, top=False, steps=False)
 
-
-####################COMMAND LINE ARGUMENTS############################
-#argparse
-parser = argparse.ArgumentParser(description='Display more information.')
-parser.add_argument('--tree', action='store_true', help='Displays maze tree')
-parser.add_argument('--top', action='store_true', help='Solve maze from top')
-args = parser.parse_args()
-
-#command line switch flow
-if args.tree:
-    main('tree')
-elif args.top:
-    main('top')
-else:
-    main(option=None)
-
-#######################################################################
-
-
+main()
 
 
